@@ -84,16 +84,4 @@ def classifications(df):
     clf_nb = predictor
     df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'f1-score':f1, 'ROC AUC':lr_auc, 'Train Time': time_train}])])
     
-    #Evaluation Metrics
-    
-    df_final, select_model = model_evaluation(model_list, df_evaluation)
-
-    pyplot.show()
-
-    #Save ROC plot to png (for Web app only)
-    roc_plot = io.BytesIO()
-    pyplot.savefig(roc_plot, format='png')
-    pyplot.clf()
-    roc_plot.seek(0)
-
-    return df_final, roc_plot, (clf_lr,clf_rf,clf_nn,clf_nb), select_model
+  
