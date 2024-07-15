@@ -198,11 +198,13 @@ def main():
         x = pd.DataFrame(x).T
 
         y_pred = predictor.predict(x)
-        pred = ord(y_pred.tostring())
+        
+        # For debugging
+        st.write(f"Prediction: {y_pred}")
 
-        if pred==1:
+        if y_pred[0] == 1:
             pred = 'higher'
-        elif pred==0:
+        elif y_pred[0] == 0:
             pred = 'lower'
         else:
             pred = 'Error - Contact Dev'
