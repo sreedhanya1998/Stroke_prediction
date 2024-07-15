@@ -9,7 +9,6 @@ def classifications(df):
     from sklearn.linear_model import LogisticRegression
     from sklearn.neighbors import KNeighborsClassifier
     from sklearn.naive_bayes import GaussianNB
-    from sklearn.ensemble import RandomForestClassifier
     from scipy.stats import randint
     from sklearn.model_selection import RandomizedSearchCV
     from imblearn.over_sampling import RandomOverSampler
@@ -49,27 +48,7 @@ def classifications(df):
     lr_auc = generate_roc(x_test, y_test, predlabel, predictor)
     clf_lr = predictor    
     df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'parameters':predictor.best_params_,'f1-score':f1, 'ROC AUC':lr_auc, 'Train Time': time_train}])])
-    
-    # Random Forest
-    predlabel = "Random Forest"
-    model_list.append(predlabel)
 
-    param_dist = {"n_estimators": randint(10, 150),
-                "max_depth": [None,1,2,3,4,5,6,7]}
-    predictor = RandomForestClassifier()
-    predictor_cv = RandomizedSearchCV(predictor, param_dist, cv=5)
-    
-    start = time.time()
-    predictor, y_pred = predictor_trainer(predictor_cv, x_test, x_train, y_train)
-    stop = time.time()
-    time_train = stop - start
-
-    print("Tuned {} Parameters: {}, with best CV score of {}.".format(predlabel,predictor.best_params_, predictor.best_score_))
-    f1 = f1_score(y_test, y_pred)
-    lr_auc = generate_roc(x_test, y_test, predlabel, predictor)
-    clf_rf = predictor
-    df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'parameters':predictor.best_params_,'f1-score':f1, 'ROC AUC':lr_auc, 'Train Time': time_train}])])
-    
     # KNN
     predlabel = 'K-Nearest Neighbours'
     model_list.append(predlabel)
