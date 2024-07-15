@@ -188,12 +188,10 @@ def main():
 
         if select_model == 'Logistic Regression':
             predictor = classifiers[0]
-        elif select_model == 'Random Forest':
-            predictor = classifiers[1]
         elif select_model == 'K-Nearest Neighbours':
-            predictor = classifiers[2]
+            predictor = classifiers[1]
         else:
-            predictor = classifiers[3]
+            predictor = classifiers[2]
 
         x = pd.DataFrame(x).T
 
