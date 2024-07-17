@@ -86,7 +86,6 @@ def main():
         st.info("Select input variables on the left for the classification model to predict likelihood of a patient's stroke event.")
         
         st.image('src/image/kavanaugh-unsplash.jpg')
-        st.caption("Image Credits: Bret Kavanaugh 2019 via Unsplash")
         
     if submit == True:
     
