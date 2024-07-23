@@ -8,9 +8,8 @@ def classifications(df):
     from sklearn.model_selection import train_test_split
     from sklearn.linear_model import LogisticRegression
     from sklearn.neighbors import KNeighborsClassifier
+    from sklearn.naive_bayes import GaussianNB
     from sklearn.ensemble import RandomForestClassifier
-    from sklearn.tree import DecisionTreeClassifier
-    from sklearn.neural_network import MLPClassifier
     from scipy.stats import randint
     from sklearn.model_selection import RandomizedSearchCV
     from imblearn.over_sampling import RandomOverSampler
@@ -36,7 +35,7 @@ def classifications(df):
     model_list.append(predlabel)
 
     param_dist = {"C": [0.1, 0.5, 1, 5, 10],
-                  "solver": ['lbfgs', 'liblinear']}
+                "solver":['lbfgs', 'liblinear']}
     predictor = LogisticRegression()
     predictor_cv = RandomizedSearchCV(predictor, param_dist, cv=5)
 
@@ -45,18 +44,18 @@ def classifications(df):
     stop = time.time()
     time_train = stop - start
 
-    print("Tuned {} Parameters: {}, with best CV score of {}.".format(predlabel, predictor.best_params_, predictor.best_score_))
+    print("Tuned {} Parameters: {}, with best CV score of {}.".format(predlabel,predictor.best_params_, predictor.best_score_))
     f1 = f1_score(y_test, y_pred)
     lr_auc = generate_roc(x_test, y_test, predlabel, predictor)
     clf_lr = predictor    
-    df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'parameters': predictor.best_params_, 'f1-score': f1, 'ROC AUC': lr_auc, 'Train Time': time_train}])])
+    df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'parameters':predictor.best_params_,'f1-score':f1, 'ROC AUC':lr_auc, 'Train Time': time_train}])])
     
     # Random Forest
     predlabel = "Random Forest"
     model_list.append(predlabel)
 
     param_dist = {"n_estimators": randint(10, 150),
-                  "max_depth": [None, 1, 2, 3, 4, 5, 6, 7]}
+                "max_depth": [None,1,2,3,4,5,6,7]}
     predictor = RandomForestClassifier()
     predictor_cv = RandomizedSearchCV(predictor, param_dist, cv=5)
     
@@ -65,39 +64,17 @@ def classifications(df):
     stop = time.time()
     time_train = stop - start
 
-    print("Tuned {} Parameters: {}, with best CV score of {}.".format(predlabel, predictor.best_params_, predictor.best_score_))
+    print("Tuned {} Parameters: {}, with best CV score of {}.".format(predlabel,predictor.best_params_, predictor.best_score_))
     f1 = f1_score(y_test, y_pred)
     lr_auc = generate_roc(x_test, y_test, predlabel, predictor)
     clf_rf = predictor
-    df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'parameters': predictor.best_params_, 'f1-score': f1, 'ROC AUC': lr_auc, 'Train Time': time_train}])])
-    
-    # Decision Tree
-    predlabel = "Decision Tree"
-    model_list.append(predlabel)
-
-    param_dist = {"max_depth": [None, 1, 2, 3, 4, 5, 6, 7],
-                  "min_samples_split": randint(2, 20),
-                  "min_samples_leaf": randint(1, 20)}
-    predictor = DecisionTreeClassifier()
-    predictor_cv = RandomizedSearchCV(predictor, param_dist, cv=5)
-    
-    start = time.time()
-    predictor, y_pred = predictor_trainer(predictor_cv, x_test, x_train, y_train)
-    stop = time.time()
-    time_train = stop - start
-
-    print("Tuned {} Parameters: {}, with best CV score of {}.".format(predlabel, predictor.best_params_, predictor.best_score_))
-    f1 = f1_score(y_test, y_pred)
-    lr_auc = generate_roc(x_test, y_test, predlabel, predictor)
-    clf_dt = predictor
-    df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'parameters': predictor.best_params_, 'f1-score': f1, 'ROC AUC': lr_auc, 'Train Time': time_train}])])
+    df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'parameters':predictor.best_params_,'f1-score':f1, 'ROC AUC':lr_auc, 'Train Time': time_train}])])
     
     # KNN
     predlabel = 'K-Nearest Neighbours'
     model_list.append(predlabel)
 
-    param_dist = {"n_neighbors": randint(1, 6),
-                  "weights": ['uniform', 'distance']}
+    param_dist = {"n_neighbors": randint(1, 6)}
     predictor = KNeighborsClassifier()
     predictor_cv = RandomizedSearchCV(predictor, param_dist, cv=5)
     
@@ -106,43 +83,39 @@ def classifications(df):
     stop = time.time()
     time_train = stop - start
 
-    print("Tuned {} Parameters: {}, with best CV score of {}.".format(predlabel, predictor.best_params_, predictor.best_score_))
-    f1 = f1_score(y_test, y_pred)
-    lr_auc = generate_roc(x_test, y_test, predlabel, predictor)
-    clf_knn = predictor
-    df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'parameters': predictor.best_params_, 'f1-score': f1, 'ROC AUC': lr_auc, 'Train Time': time_train}])])
-    
-    # Neural Network
-    predlabel = "Neural Network"
-    model_list.append(predlabel)
-
-    param_dist = {"hidden_layer_sizes": [(50,), (100,), (50, 50)],
-                  "activation": ['relu', 'tanh', 'logistic'],
-                  "solver": ['adam', 'sgd'],
-                  "alpha": [0.0001, 0.001, 0.01]}
-    predictor = MLPClassifier(max_iter=500)
-    predictor_cv = RandomizedSearchCV(predictor, param_dist, cv=5)
-    
-    start = time.time()
-    predictor, y_pred = predictor_trainer(predictor_cv, x_test, x_train, y_train)
-    stop = time.time()
-    time_train = stop - start
-
-    print("Tuned {} Parameters: {}, with best CV score of {}.".format(predlabel, predictor.best_params_, predictor.best_score_))
+    print("Tuned {} Parameters: {}, with best CV score of {}.".format(predlabel,predictor.best_params_, predictor.best_score_))
     f1 = f1_score(y_test, y_pred)
     lr_auc = generate_roc(x_test, y_test, predlabel, predictor)
     clf_nn = predictor
-    df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'parameters': predictor.best_params_, 'f1-score': f1, 'ROC AUC': lr_auc, 'Train Time': time_train}])])
+    df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'parameters':predictor.best_params_,'f1-score':f1, 'ROC AUC':lr_auc, 'Train Time': time_train}])])
     
-    # Evaluation Metrics
+    # Naive Bayes
+    predlabel = "Naive Bayes"
+    model_list.append(predlabel)
+
+    predictor = GaussianNB()
+    
+    start = time.time()
+    predictor, y_pred = predictor_trainer(predictor, x_test, x_train, y_train)
+    stop = time.time()
+    time_train = stop - start
+
+    f1 = f1_score(y_test, y_pred)
+    lr_auc = generate_roc(x_test, y_test, predlabel, predictor)
+    clf_nb = predictor
+    df_evaluation = pd.concat([df_evaluation, pd.DataFrame.from_records([{'f1-score':f1, 'ROC AUC':lr_auc, 'Train Time': time_train}])])
+    
+    #Evaluation Metrics
+    
     df_final, select_model = model_evaluation(model_list, df_evaluation)
 
     pyplot.show()
 
-    # Save ROC plot to png (for Web app only)
+    #Save ROC plot to png (for Web app only)
     roc_plot = io.BytesIO()
     pyplot.savefig(roc_plot, format='png')
     pyplot.clf()
     roc_plot.seek(0)
 
-    return df_final, roc_plot, (clf_lr, clf_rf, clf_dt, clf_knn, clf_nn), select_model
+    return df_final, roc_plot, (clf_lr,clf_rf,clf_nn,clf_nb), select_model
+
